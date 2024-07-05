@@ -2,9 +2,9 @@
   "name": "telegram-bot-nodejs",
   "version": "1.0.0",
   "description": "Telegram Bot using Telegraf in Node.js",
-  "main": "index.js",
+  "main": "tt.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node tt.js"
   },
   "dependencies": {
     "telegraf": "^4.7.11",
