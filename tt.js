@@ -43,13 +43,13 @@ function downloadVideo(url) {
 }
 
 // Middleware untuk menanggapi pesan /start
-bot.start((ctx) => ctx.reply('Halo! Ketik /download <URL TikTok> untuk mengunduh video.'));
+bot.start((ctx) => ctx.reply('Halo! Ketik /download <URL TikTok etc> untuk mengunduh video.'));
 
 // Middleware untuk menanggapi pesan /download <URL>
 bot.command('download', async (ctx) => {
     const url = ctx.message.text.split(' ')[1];
     if (!url) {
-        return ctx.reply('Gunakan perintah /download dengan URL TikTok.');
+        return ctx.reply('Gunakan perintah /download dengan URL TikTok etc.');
     }
 
     try {
