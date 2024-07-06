@@ -12,7 +12,7 @@ const bot = new Telegraf(TOKEN);
 function downloadVideo(url) {
     return new Promise((resolve, reject) => {
         const api_url = 'https://api.cobalt.tools/api/json';
-        const payload = { url };
+        const payload = { url, vCodec: 'av1', vQuality: '1080' };
         const headers = { 'Accept': 'application/json' };
 
         request.post({ url: api_url, json: payload, headers }, (err, response, body) => {
@@ -21,18 +21,22 @@ function downloadVideo(url) {
             } else if (response.statusCode !== 200) {
                 reject(`Gagal mengunduh video. Status code: ${response.statusCode}`);
             } else {
-                const video_url = body.url;
-                const video_name = 'video.mp4';
-                const file = fs.createWriteStream(video_name);
-                
-                request.get(video_url)
-                    .on('error', (err) => {
-                        reject(`Gagal mengunduh video. Error: ${err}`);
-                    })
-                    .pipe(file)
-                    .on('finish', () => {
-                        resolve(video_name);
-                    });
+                if (body.status === 'redirect') {
+                    resolve({ status: 'redirect', url: body.url });
+                } else {
+                    const video_url = body.url;
+                    const video_name = `video_${Math.random().toString(36).substring(7)}.mp4`;
+                    const file = fs.createWriteStream(video_name);
+
+                    request.get(video_url)
+                        .on('error', (err) => {
+                            reject(`Gagal mengunduh video. Error: ${err}`);
+                        })
+                        .pipe(file)
+                        .on('finish', () => {
+                            resolve({ status: 'download', video_name });
+                        });
+                }
             }
         });
     });
@@ -49,9 +53,15 @@ bot.command('download', async (ctx) => {
     }
 
     try {
-        const videoName = await downloadVideo(url);
-        // Kirim video yang telah diunduh ke pengguna
-        ctx.replyWithVideo({ source: videoName });
+        const result = await downloadVideo(url);
+        
+        if (result.status === 'redirect') {
+            ctx.reply(`Video dapat diunduh dari URL berikut: ${result.url}`);
+        } else {
+            const videoName = result.video_name;
+            // Kirim video yang telah diunduh ke pengguna
+            ctx.replyWithVideo({ source: videoName });
+        }
     } catch (error) {
         console.error('Error:', error);
         ctx.reply(error); // Balas pengguna jika terjadi kesalahan
