@@ -12,7 +12,7 @@ const bot = new Telegraf(TOKEN);
 function downloadVideo(url) {
     return new Promise((resolve, reject) => {
         const api_url = 'https://api.cobalt.tools/api/json';
-        const payload = { url, vCodec: 'av1', vQuality: '1080' };
+        const payload = { url, vQuality: '1080' };
         const headers = { 'Accept': 'application/json' };
 
         request.post({ url: api_url, json: payload, headers }, (err, response, body) => {
