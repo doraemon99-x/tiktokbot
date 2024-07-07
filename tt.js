@@ -3,7 +3,7 @@ const request = require('request');
 const fs = require('fs');
 
 // Token bot Telegram dari BotFather
-const TOKEN = '7006660414:AAGDu14d3lNflBmUVcZz235NhCMR6sE0OI8';
+const TOKEN = '7495607275:AAHZEM6jMDFlXO5-autJdJOHPisN00abXeA';
 
 // Inisialisasi bot
 const bot = new Telegraf(TOKEN);
