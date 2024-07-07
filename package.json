@@ -1,6 +1,6 @@
 {
-  "name": "telegram-bot-nodejs",
-  "version": "1.0.0",
+  "name": "telegram-bot",
+  "version": "1.5.0",
   "description": "Telegram Bot using Telegraf in Node.js",
   "main": "tt.js",
   "scripts": {
