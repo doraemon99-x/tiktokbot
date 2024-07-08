@@ -3,7 +3,7 @@ const request = require('request');
 const fs = require('fs');
 
 // Token bot Telegram dari BotFather
-const TOKEN = '7495607275:AAHZEM6jMDFlXO5-autJdJOHPisN00abXeA';
+const TOKEN = '7006660414:AAFztKCoXAmk9IV3vA6DIE73cpIH3mswAUw';
 
 // Inisialisasi bot
 const bot = new Telegraf(TOKEN);
@@ -17,25 +17,34 @@ function downloadVideo(url) {
 
         request.post({ url: api_url, json: payload, headers }, (err, response, body) => {
             if (err) {
-                reject(`Gagal mengunduh video. Error: ${err}`);
+                return reject(`Gagal mengunduh video. Error: ${err}`);
             } else if (response.statusCode !== 200) {
-                reject(`Gagal mengunduh video. Status code: ${response.statusCode}`);
+                return reject(`Gagal mengunduh video. Status code: ${response.statusCode}`);
             } else {
                 if (body.status === 'redirect') {
-                    resolve({ status: 'redirect', url: body.url });
+                    resolve({ type: 'redirect', url: body.url });
                 } else {
                     const video_url = body.url;
-                    const video_name = `video_${Math.random().toString(36).substring(7)}.mp4`;
+                    const video_name = 'video.mp4';
                     const file = fs.createWriteStream(video_name);
+                    
+                    const videoStream = request.get(video_url);
 
-                    request.get(video_url)
-                        .on('error', (err) => {
-                            reject(`Gagal mengunduh video. Error: ${err}`);
-                        })
-                        .pipe(file)
-                        .on('finish', () => {
-                            resolve({ status: 'download', video_name });
-                        });
+                    // Penanganan error pada videoStream
+                    videoStream.on('error', (err) => {
+                        return reject(`Gagal mengunduh video. Error: ${err}`);
+                    });
+
+                    // Penanganan error pada file write stream
+                    file.on('error', (err) => {
+                        return reject(`Gagal menyimpan video. Error: ${err}`);
+                    });
+
+                    videoStream.pipe(file).on('finish', () => {
+                        resolve({ type: 'video', name: video_name });
+                    }).on('error', (err) => {
+                        return reject(`Gagal mengunduh video. Error: ${err}`);
+                    });
                 }
             }
         });
@@ -43,24 +52,22 @@ function downloadVideo(url) {
 }
 
 // Middleware untuk menanggapi pesan /start
-bot.start((ctx) => ctx.reply('Halo! Ketik /download <URL TikTok etc> untuk mengunduh video.'));
+bot.start((ctx) => ctx.reply('Halo! Ketik /download <URL TikTok> untuk mengunduh video.'));
 
 // Middleware untuk menanggapi pesan /download <URL>
 bot.command('download', async (ctx) => {
     const url = ctx.message.text.split(' ')[1];
     if (!url) {
-        return ctx.reply('Gunakan perintah /download dengan URL TikTok etc.');
+        return ctx.reply('Gunakan perintah /download dengan URL TikTok.');
     }
 
     try {
         const result = await downloadVideo(url);
-        
-        if (result.status === 'redirect') {
-            ctx.reply(`Video dapat diunduh dari URL berikut: ${result.url}`);
-        } else {
-            const videoName = result.video_name;
+        if (result.type === 'redirect') {
+            ctx.reply(`Video dapat diunduh di: ${result.url}`);
+        } else if (result.type === 'video') {
             // Kirim video yang telah diunduh ke pengguna
-            ctx.replyWithVideo({ source: videoName });
+            ctx.replyWithVideo({ source: result.name });
         }
     } catch (error) {
         console.error('Error:', error);
