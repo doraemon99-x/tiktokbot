@@ -1,15 +1,15 @@
 {
   "name": "telegram-bot-nodejs",
-  "version": "1.5.0",
+  "version": "1.0.0",
   "description": "A Telegram bot for downloading videos and handling redirect responses",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "request": "^2.88.2",
+    "axios": "^0.21.1",
     "telegraf": "^4.7.0",
-    "fs": "0.0.1-security"
+    "uuid": "^8.3.2"
   },
   "repository": {
     "type": "git",
