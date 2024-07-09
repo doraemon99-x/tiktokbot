@@ -1,5 +1,5 @@
 const { Telegraf } = require('telegraf');
-const request = require('request');
+const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
@@ -10,37 +10,33 @@ const TOKEN = '7431504934:AAF0HhTwFCKzp2Oc4J6qa9oqc2XqEkHd6EE';
 const bot = new Telegraf(TOKEN);
 
 // Fungsi untuk mengunduh video dari URL menggunakan Cobalt API
-function downloadVideo(url) {
-    return new Promise((resolve, reject) => {
+async function downloadVideo(url) {
+    try {
         const api_url = 'https://api.cobalt.tools/api/json';
         const payload = { url, vQuality: '1080' };
         const headers = { 'Accept': 'application/json' };
 
-        request.post({ url: api_url, json: payload, headers }, (err, response, body) => {
-            if (err) {
-                reject(`Gagal mengunduh video. Error: ${err}`);
-            } else if (response.statusCode !== 200) {
-                reject(`Gagal mengunduh video. Status code: ${response.statusCode}`);
-            } else {
-                const video_url = body.url;
-                if (body.status === 'redirect') {
-                    resolve(body.url);
-                } else {
-                    const video_name = `video_${Date.now()}.mp4`;
-                    const file = fs.createWriteStream(video_name);
+        const response = await axios.post(api_url, payload, { headers });
 
-                    request.get(video_url)
-                        .on('error', (err) => {
-                            reject(`Gagal mengunduh video. Error: ${err}`);
-                        })
-                        .pipe(file)
-                        .on('finish', () => {
-                            resolve(video_name);
-                        });
-                }
-            }
-        });
-    });
+        if (response.data.status === 'redirect') {
+            return response.data.url;
+        } else {
+            const video_url = response.data.url;
+            const video_name = `video_${Date.now()}.mp4`;
+
+            const videoResponse = await axios.get(video_url, { responseType: 'stream' });
+            const file = fs.createWriteStream(video_name);
+
+            videoResponse.data.pipe(file);
+
+            return new Promise((resolve, reject) => {
+                file.on('finish', () => resolve(video_name));
+                file.on('error', reject);
+            });
+        }
+    } catch (error) {
+        throw new Error(`Gagal mengunduh video. Error: ${error.message}`);
+    }
 }
 
 // Middleware untuk menanggapi pesan /start
@@ -64,7 +60,7 @@ bot.command('download', async (ctx) => {
         }
     } catch (error) {
         console.error('Error:', error);
-        ctx.reply(error); // Balas pengguna jika terjadi kesalahan
+        ctx.reply(error.message); // Balas pengguna jika terjadi kesalahan
     }
 });
 
