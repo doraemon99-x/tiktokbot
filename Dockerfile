@@ -1,20 +1,20 @@
-# Use the latest Node.js LTS version as the base image
-FROM node:18
+# Menggunakan base image Node.js versi terbaru
+FROM node:latest
 
-# Create and set the working directory
+# Set working directory
 WORKDIR /usr/src/app
 
-# Copy the package.json and package-lock.json
+# Copy package.json dan package-lock.json
 COPY package*.json ./
 
-# Install the dependencies
+# Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Copy seluruh kode aplikasi ke dalam container
 COPY . .
 
-# Expose the port the bot will run on
+# Expose port
 EXPOSE 3000
 
-# Command to run the bot
-CMD ["node", "index.js"]
+# Menjalankan aplikasi
+CMD ["npm", "start"]
