@@ -1,15 +1,31 @@
 {
   "name": "telegram-bot-nodejs",
-  "version": "1.0.0",
-  "description": "A Telegram bot to download videos using Cobalt API",
+  "version": "1.5.0",
+  "description": "A Telegram bot for downloading videos and handling redirect responses",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "telegraf": "^4.3.0",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "telegraf": "^4.7.0",
+    "fs": "0.0.1-security"
   },
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doraemon99-x/tiktokbot.git"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "nodejs",
+    "video",
+    "download"
+  ],
+  "author": "Your Name",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/doraemon99-x/tiktokbot/issues"
+  },
+  "homepage": "https://github.com/doraemon99-x/tiktokbot#readme"
 }
