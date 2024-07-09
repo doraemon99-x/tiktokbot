@@ -1,17 +1,20 @@
-# Menggunakan base image Node.js versi LTS (14.x)
-FROM node:14-slim
+# Use the latest Node.js LTS version as the base image
+FROM node:18
 
-# Set working directory di dalam container
-WORKDIR /app
+# Create and set the working directory
+WORKDIR /usr/src/app
 
-# Menyalin file package.json dan package-lock.json (jika ada)
+# Copy the package.json and package-lock.json
 COPY package*.json ./
 
-# Menginstal dependencies
+# Install the dependencies
 RUN npm install
 
-# Menyalin seluruh konten dari direktori saat ini ke dalam container di /app
+# Copy the rest of the application code
 COPY . .
 
-# Command untuk menjalankan bot saat container dijalankan
-CMD ["npm", "start"]
+# Expose the port the bot will run on
+EXPOSE 3000
+
+# Command to run the bot
+CMD ["node", "index.js"]
