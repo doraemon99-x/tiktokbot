@@ -3,13 +3,10 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-// Token bot Telegram dari BotFather
-const TOKEN = '7431504934:AAF0HhTwFCKzp2Oc4J6qa9oqc2XqEkHd6EE';
+const TOKEN = '5219568853:AAFnaY_na9bF3y8yjnKNj5b8n2ItNu60HJ0';
 
-// Inisialisasi bot
 const bot = new Telegraf(TOKEN);
 
-// Fungsi untuk mengunduh video dari URL menggunakan Cobalt API
 async function downloadVideo(url) {
     try {
         const api_url = 'https://api.cobalt.tools/api/json';
@@ -39,10 +36,8 @@ async function downloadVideo(url) {
     }
 }
 
-// Middleware untuk menanggapi pesan /start
 bot.start((ctx) => ctx.reply('Halo! Ketik /download <URL TikTok> untuk mengunduh video.'));
 
-// Middleware untuk menanggapi pesan /download <URL>
 bot.command('download', async (ctx) => {
     const url = ctx.message.text.split(' ')[1];
     if (!url) {
@@ -50,21 +45,22 @@ bot.command('download', async (ctx) => {
     }
 
     try {
+        await ctx.reply('Sedang mengunduh video, harap tunggu...');
         const video = await downloadVideo(url);
+        
         if (video.startsWith('http')) {
-            // Kirim URL yang diterima dari respons redirect ke pengguna
+            await ctx.reply('Video berhasil diunduh!');
             ctx.reply(video);
         } else {
-            // Kirim video yang telah diunduh ke pengguna
+            await ctx.reply('Video berhasil diunduh! Sedang mengunggah...');
             ctx.replyWithVideo({ source: video });
         }
     } catch (error) {
         console.error('Error:', error);
-        ctx.reply(error.message); // Balas pengguna jika terjadi kesalahan
+        ctx.reply(`Terjadi kesalahan: ${error.message}`);
     }
 });
 
-// Mulai bot
 bot.launch().then(() => {
     console.log('Bot is running');
 }).catch((err) => {
