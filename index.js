@@ -3,7 +3,7 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-const TOKEN = '5219568853:AAFnaY_na9bF3y8yjnKNj5b8n2ItNu60HJ0';
+const TOKEN = '7431504934:AAF0HhTwFCKzp2Oc4J6qa9oqc2XqEkHd6EE';
 
 const bot = new Telegraf(TOKEN);
 
